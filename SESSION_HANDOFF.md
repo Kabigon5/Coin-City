@@ -59,9 +59,10 @@ configured). After every major playable milestone run:
 cd /home/claude/Coin-City && zip -qr "backups/Coin-City_$(date +%Y-%m-%d_%H%M).zip" . -x "backups/*" -x ".git/*"
 
 ## Known bugs
-None yet (no runnable build yet at this checkpoint).
+None open. Browser QA found and fixed: fractional minutes in the clock
+text, and a file:// CORS console error from the billboard drop-in loader.
 
 ## Next implementation step
-Write game/js/config.js, input.js, audio.js, save.js, then characters.js,
-world.js, player.js, ui.js, main.js. Milestone target: walkable Budget Bay
-blockout with day and night, weather, animated pedestrians, HUD clock.
+interiors.js: nine enterable rooms at x >= 1000 with door interactables and
+fade transitions, then dialogue.js. The walkable-city milestone is done and
+browser-verified (see PROGRESS.md and exports/ screenshots).

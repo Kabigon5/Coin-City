@@ -2,31 +2,52 @@
 
 Project: Coin City: Build Your Future, Chapter One: Budget Bay
 Engine: Three.js r128 (browser real-time 3D), plain script modules, no build step
-Updated: Session 1, Checkpoint 1
+Updated: Session 2, walkable city milestone COMPLETE and browser-verified
 
-## FINISHED AND WORKING
-- Project folder structure created (docs, game, assets, exports, backups)
-- Git repository initialized (local, no remote connected in this environment)
-- Three.js r128 downloaded and vendored at game/js/lib/three.min.js (works offline)
-- Higgsfield prompt library written (HIGGSFIELD_PROMPTS.md, all 15 required assets plus extras)
-- Asset manifest started (ASSET_MANIFEST.md)
+## FINISHED AND WORKING (verified in headless Chrome, zero console errors)
+- Project scaffold, git repo (local), tracking docs, Higgsfield prompt library
+- game/index.html + full css: HUD, dialogue, phone, panel, menu, cinematic layers styled
+- config.js: CC namespace, palettes, full default state, settings, time and math helpers
+- audio.js: procedural WebAudio SFX (18 sounds), generative day/evening/night/event/glitch
+  music, rain loop. No external audio files needed
+- save.js: 3 slots + autosave in localStorage, settings persistence, slot summaries
+- input.js: keyboard, pointer-lock mouse look, wheel zoom, basic gamepad
+- characters.js: primitive-rig character factory (5 hairstyles, accessories, aprons,
+  beard, hats), real pivoted walk cycles, idle sway, NPC class with hourly schedules,
+  random pedestrian crowds with shopping bags
+- world.js: complete Budget Bay: main street, residential street, cross streets, market
+  plaza, park, canal + bridge + pier market, business alley. 9 signed shop buildings
+  (bank, city hall, player home, community center damaged/fixed swap, grocery, cafe,
+  bakery, general store, repair shop), row homes, decorative buildings, clock tower with
+  a working hour hand, animated fountain, glowing bank coin, animated Instant Everything
+  billboard (canvas ads rotate; glitch takeover mode; http drop-in slot for Higgsfield),
+  3 posters, 3 bus stops, benches (one broken), trees that sway, flags, murals, litter,
+  EasyCoins kiosk, broken bicycle prop, driving city bus that pauses at stops,
+  day/night sky + sun + lamps + lit shop windows, weather (clear/cloudy/rain particles
+  + rain audio), restoration stages 1-3 with visible city changes, 68 colliders
+- player.js: third-person controller: camera-relative WASD + gamepad, accel/decel,
+  collide-and-slide (browser-verified: wall stop and wall slide), orbit camera with
+  wall occlusion raycast, zoom, footsteps (grass vs pavement), bicycle mode ready
+- ui.js: HUD chips, toasts, interaction prompt, one-time tutorial hints, tracker,
+  fade, banner
+- main.js: renderer with graphics presets, game loop, time advance (1s = 1 game min),
+  day rollover with weather reroll, NPC schedule table for all 10 named characters,
+  interaction scanner (bench resting works), music follows time of day
+- QA run in real headless Chrome: boot clean, HUD visible, 10 NPCs + 8 pedestrians
+  spawned, movement, collision, sliding, day + night screenshots in exports/
 
-## IN PROGRESS
-- Core engine files (config, input, audio, save)
-- World blockout, player controller, camera
+## KNOWN LIMITATIONS (current build, all planned work)
+- Boots directly into the city with the default look. Main menu, character creator,
+  save/load UI are the dedicated UI checkpoint
+- Building doors are visual only until the interiors checkpoint wires the 9 rooms
+- Billboard Higgsfield drop-in only loads over http(s) (browser WebGL rule); the
+  procedural ad is the file:// fallback by design
 
 ## NOT STARTED
-- Interiors, dialogue, phone, missions, economy UI, business sim, Future Lens,
-  cinematics, menus, character creator, assessments
-
-## HIGGSFIELD STATUS
-The Higgsfield connector is present. A live generation call was attempted and
-returned "No approval received", meaning the in-chat approval prompt was not
-granted. Fallback per project brief: exact production-ready prompts are stored
-in HIGGSFIELD_PROMPTS.md. The game auto-loads finished renders from assets/
-(see assets/README.md) with procedural canvas art as the shipped fallback, so
-generated images can be dropped in with zero code changes.
+interiors.js, dialogue.js, economy.js, phone.js, jobs.js, business.js, futurelens.js,
+missions.js (m1-m10), cinematic.js, full menus/creator, assessments, docs/ deliverables
 
 ## EXACT NEXT STEP
-Write game/js/config.js, input.js, audio.js, save.js. Then world.js,
-characters.js, player.js, ui.js, main.js so the district is walkable.
+interiors.js: nine enterable rooms at x >= 1000 (home, bank, bakery, grocery, cafe,
+repair, store, community center, city hall), door interactables with fade transitions
+both ways, per-room colliders and props. Then dialogue.js.

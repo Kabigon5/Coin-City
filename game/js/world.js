@@ -300,12 +300,16 @@ CC.world = (function () {
     bScreen.position.set(-26, 9.2, -29); bScreen.rotation.y = Math.PI / 4 + Math.PI / 2;
     scene.add(bScreen);
     drawAd(0);
-    // try to swap in a Higgsfield render if assets/billboard.jpg exists
-    try {
-      new THREE.TextureLoader().load("../assets/billboard.jpg", function (t) {
-        billboard.mat.map = t; billboard.custom = true; billboard.mat.needsUpdate = true;
-      }, undefined, function () {});
-    } catch (e) {}
+    // Swap in a Higgsfield render if assets/billboard.jpg exists. Browsers
+    // only allow WebGL image textures over http(s), so when the game is
+    // opened straight from the file system the procedural ad stays active.
+    if (location.protocol === "http:" || location.protocol === "https:") {
+      try {
+        new THREE.TextureLoader().load("../assets/billboard.jpg", function (t) {
+          billboard.mat.map = t; billboard.custom = true; billboard.mat.needsUpdate = true;
+        }, undefined, function () {});
+      } catch (e) {}
+    }
 
     // Instant Everything posters (scam investigation targets)
     [[-16.2, 3, 10, 0], [34, 2.2, 27.9, Math.PI], [88.5, 2.5, -12, Math.PI / 2]].forEach(function (pp, i) {

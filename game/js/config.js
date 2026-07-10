@@ -74,7 +74,7 @@ CC.settings = CC.defaultSettings();
 // Time helpers
 CC.hour = function () { return Math.floor(CC.state.minutes / 60); };
 CC.clockText = function () {
-  var h = CC.hour(), m = CC.state.minutes % 60;
+  var h = CC.hour(), m = Math.floor(CC.state.minutes % 60);
   var ap = h < 12 ? "AM" : "PM"; var hh = h % 12; if (hh === 0) hh = 12;
   return hh + ":" + (m < 10 ? "0" : "") + m + " " + ap;
 };
