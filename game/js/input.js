@@ -3,7 +3,7 @@
 // A interact, B run). Overlays release pointer lock automatically.
 CC.input = (function () {
   var down = {}, pressed = {}, mdx = 0, mdy = 0, wheel = 0, locked = false;
-  var canvas = null;
+  var canvas = null, dragging = false;
 
   function onKeyDown(e) {
     if (e.repeat) return;
@@ -20,16 +20,23 @@ CC.input = (function () {
     window.addEventListener("blur", function () { down = {}; });
     canvas.addEventListener("click", function () {
       CC.audio.ensure(); CC.audio.resume();
-      if (!CC.paused && !locked) canvas.requestPointerLock();
+      // Pointer lock is blocked inside some embedded previews; the
+      // drag-to-look fallback below covers those cases.
+      if (!CC.paused && !locked) {
+        try { canvas.requestPointerLock(); } catch (e) {}
+      }
     });
+    canvas.addEventListener("mousedown", function () { dragging = true; });
+    window.addEventListener("mouseup", function () { dragging = false; });
     document.addEventListener("pointerlockchange", function () {
       locked = document.pointerLockElement === canvas;
     });
     document.addEventListener("mousemove", function (e) {
       if (locked) { mdx += e.movementX; mdy += e.movementY; }
+      else if (dragging && !CC.paused) { mdx += e.movementX; mdy += e.movementY; }
     });
     window.addEventListener("wheel", function (e) {
-      if (locked) wheel += e.deltaY;
+      if (!CC.paused) wheel += e.deltaY;
     }, { passive: true });
     window.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   }

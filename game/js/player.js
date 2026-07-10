@@ -104,7 +104,7 @@ CC.player = (function () {
       faceYaw = Math.atan2(dx, dz);
       // footsteps
       stepTimer -= dt;
-      if (stepTimer <= 0 && CC.input.isLocked()) {
+      if (stepTimer <= 0) {
         stepTimer = riding ? 0.5 : (0.55 - (vel / top) * 0.22);
         if (riding) { if (Math.random() < 0.2) CC.audio.sfx("bike"); }
         else CC.audio.sfx(inPark(pos.x, pos.z) ? "stepGrass" : "step");

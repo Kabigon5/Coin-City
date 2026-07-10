@@ -58,20 +58,52 @@ CC.main = (function () {
       ],
       rusty: [
         { h: 0, hide: true, zone: "city", x: 75, z: 7 },
-        { h: 9, zone: "city", x: 75, z: 6.6, face: Math.PI },
+        { h: 9, zone: "repair", x: 1597, z: -3.2, face: Math.PI },  // at his workbench
         { h: 18, hide: true, zone: "city", x: 75, z: 7 }
       ],
       carla: [
         { h: 0, hide: true, zone: "city", x: -25, z: 7 },
-        { h: 6, zone: "city", x: -25, z: 6.6, face: Math.PI },
+        { h: 6, zone: "cafe", x: 1478, z: -1.6, face: Math.PI },    // behind the counter
         { h: 16, hide: true, zone: "city", x: -25, z: 7 }
       ],
       greta: [
         { h: 0, hide: true, zone: "city", x: -73, z: 7 },
-        { h: 8, zone: "city", x: -73, z: 6.6, face: Math.PI },
+        { h: 8, zone: "grocery", x: 1367, z: 5.4, face: 0 },        // at the checkout
         { h: 20, hide: true, zone: "city", x: -73, z: 7 }
       ]
     };
+  }
+
+  // Shopkeepers stand inside during open hours; interiors give their real
+  // spots for Penny and Nia too, replacing the sidewalk placeholders.
+  function indoorShifts(s) {
+    s.penny.splice(1, 1, { h: 9, zone: "bank", x: 1116.5, z: -2, face: Math.PI });
+    s.nia.splice(1, 1, { h: 7, zone: "bakery", x: 1240, z: -4, face: Math.PI });
+    return s;
+  }
+
+  // Sleeping at home: fade, advance to next morning, restore energy, new
+  // weather, utilities arrive every third day, autosave.
+  function sleep() {
+    CC.paused = true;
+    CC.ui.fade(true, function () {
+      CC.state.day++;
+      CC.state.minutes = 7 * 60;
+      CC.state.energy = 100;
+      CC.world.rollWeather();
+      var billNote = "";
+      if (CC.state.day % 3 === 0) {
+        CC.state.flags.billDue = true;
+        billNote = " A utilities bill arrived: 12 coins.";
+        CC.state.msgs.push({ day: CC.state.day, from: "Bay Utilities", text: "Your utilities bill of 12 coins is due. Pay it from your phone or lose a little trust around town.", scam: false });
+      }
+      CC.ui.updateHUD();
+      CC.save.autosave("slept");
+      CC.paused = false;
+      CC.ui.fade(false, null, 700);
+      CC.ui.banner("Day " + CC.state.day, CC.clockText());
+      if (billNote) CC.ui.toast(billNote.trim(), "bad");
+    }, 700);
   }
 
   // Rest spots the player can actually use right now
@@ -116,14 +148,16 @@ CC.main = (function () {
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Fresh state, then build the living district
+    // Fresh state, then build the living district and its interiors
     CC.state = CC.defaultState();
     CC.world.build(scene);
     CC.world.initLampLights();
     CC.world.makeRain();
     CC.world.setWeather(CC.state.weather);
     CC.world.applyStage();
-    CC.chars.spawnCast(scene, schedules());
+    CC.interiors.build(scene);
+    CC.interiors.refreshHome();
+    CC.chars.spawnCast(scene, indoorShifts(schedules()));
     CC.player.spawn(scene, camera, CC.state.look);
     CC.player.warp(8, 6, Math.PI); // stepping off the bus at the plaza stop
     registerBenches();
@@ -196,5 +230,5 @@ CC.main = (function () {
 
   window.addEventListener("load", init);
 
-  return { init: init, sceneRef: function () { return scene; }, cameraRef: function () { return camera; } };
+  return { init: init, sleep: sleep, sceneRef: function () { return scene; }, cameraRef: function () { return camera; } };
 })();
