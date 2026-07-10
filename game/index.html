@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin City: Build Your Future. Chapter One: Budget Bay</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="game">
+  <canvas id="view"></canvas>
+
+  <!-- Heads up display -->
+  <div id="hud" class="hidden">
+    <div id="hudTop">
+      <div class="chip" id="chipClock">Day 1, 8:30 AM</div>
+      <div class="chip" id="chipWeather">Clear</div>
+      <div class="chip money" id="chipCash">25 coins</div>
+      <div class="chip money2 hidden" id="chipSave">Saved 0</div>
+      <div class="chip debtChip hidden" id="chipDebt">Debt 0</div>
+      <div class="chip energyWrap"><span>Energy</span><div class="bar"><div id="energyFill"></div></div></div>
+    </div>
+    <div id="tracker" class="hidden"><div id="trackerTitle"></div><div id="trackerObj"></div></div>
+    <div id="basketChip" class="hidden"></div>
+    <div id="bizHUD" class="hidden"></div>
+    <div id="prompt" class="hidden"></div>
+    <div id="hintBar" class="hidden"></div>
+    <div id="toastWrap"></div>
+  </div>
+
+  <!-- Dialogue -->
+  <div id="dlg" class="hidden">
+    <div id="dlgCard">
+      <div id="dlgPortrait"><span id="dlgFace"></span></div>
+      <div id="dlgBody">
+        <div id="dlgName"></div>
+        <div id="dlgText"></div>
+        <div id="dlgChoices"></div>
+        <div id="dlgNext">E or click to continue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone -->
+  <div id="phone" class="hidden">
+    <div id="phoneShell">
+      <div id="phoneTop"><span id="phoneClock"></span><span>Budget Bay Net</span></div>
+      <div id="phoneScreen"></div>
+      <div id="phoneDock"></div>
+    </div>
+  </div>
+
+  <!-- Generic modal panel: shops, minigames, lens, allocator, report -->
+  <div id="panel" class="hidden"><div id="panelCard"></div></div>
+
+  <!-- Fullscreen menus -->
+  <div id="menu" class="hidden"><div id="menuCard"></div></div>
+
+  <!-- Cinematic dressing -->
+  <div id="fade"></div>
+  <div class="lbox" id="lboxT"></div>
+  <div class="lbox" id="lboxB"></div>
+  <div id="caption" class="hidden"></div>
+  <div id="banner" class="hidden"><div id="bannerTitle"></div><div id="bannerSub"></div></div>
+  <div id="skipHint" class="hidden">Enter: skip</div>
+
+  <!-- Effects -->
+  <canvas id="glitchFX" class="hidden"></canvas>
+  <div id="lensTint" class="hidden"></div>
+  <div id="vignette"></div>
+</div>
+
+<script src="js/lib/three.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/save.js"></script>
+<script src="js/input.js"></script>
+<script src="js/characters.js"></script>
+<script src="js/world.js"></script>
+<script src="js/player.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
