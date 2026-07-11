@@ -19,3 +19,9 @@
   interior with 9 labeled displays, cashier, inspect/basket/checkout flow,
   adaptive summary, replay, save/reload. All 10 required test scenarios PASS
   in real Chrome with zero console errors. Movement and camera smoothing polish.
+
+## Session 4
+- UX pass: auto-fit sign text at 2x resolution, OPEN/CLOSED plaques,
+  closed-hour door prompts, NPC name tags, clearer landmark signs, reworded
+  mission hint. Space-to-jump added. Mission 2: FIRST PROFIT implemented and
+  fully tested (14 browser assertions incl. borrow path and mid-sale reload).

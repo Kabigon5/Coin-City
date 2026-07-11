@@ -77,16 +77,23 @@ CC.missions = (function () {
   }
 
   // ---------- mission marker ----------
+  var markerY = 8.6;
   function buildMarker(sc) {
     marker = new THREE.Mesh(new THREE.OctahedronGeometry(0.55),
       new THREE.MeshLambertMaterial({ color: 0xffc94d, emissive: 0x996600 }));
-    marker.position.set(48, 8.6, 7);
     sc.add(marker);
     ring = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.09, 8, 28),
       new THREE.MeshBasicMaterial({ color: 0x2fa5a9 }));
-    ring.rotation.x = -Math.PI / 2; ring.position.set(48, 0.07, 6.2);
+    ring.rotation.x = -Math.PI / 2;
     sc.add(ring);
     setMarker(false);
+  }
+  // The one shared mission marker; missions move it where the player should go
+  function setMarkerAt(x, z, y) {
+    markerY = y || 8.6;
+    marker.position.set(x, markerY, z);
+    ring.position.set(x, 0.07, z - 0.8);
+    setMarker(true);
   }
   function setMarker(on) {
     markerOn = on;
@@ -99,6 +106,7 @@ CC.missions = (function () {
     cashier = CC.chars.make({ skin: 2, hair: 2, hairC: 2, top: 3, jacket: 3, pants: 7, shoes: 8, acc: 0, pack: -1, apron: 0x5a3a7a });
     cashier.group.position.set(1724, 0, 4.2);
     cashier.group.rotation.y = Math.PI; // faces the counter and the door
+    cashier.group.add(CC.chars.nameSprite("Sam, Cashier", "#d9b3ff"));
     sc.add(cashier.group);
   }
 
@@ -122,8 +130,8 @@ CC.missions = (function () {
       CC.ui.banner("MISSION 1", "FIRST BUDGET");
       CC.audio.sfx("mission");
       CC.ui.tracker("First Budget", "Buy the essentials while staying within your 40-coin budget: lunch, notebook, bus pass.");
-      setMarker(true);
-      CC.ui.hint("m1go", "Follow the gold marker east along Main Street to Thread + Things.", 8);
+      setMarkerAt(48, 7);
+      CC.ui.hint("m1go", "Face the street and head right. Look for the bobbing gold marker above Thread + Things.", 9);
       CC.save.autosave("mission started");
     });
   }
@@ -356,7 +364,7 @@ CC.missions = (function () {
     // marker bob and spin, ring pulse
     if (markerOn && marker && !CC.settings.reducedMotion) {
       markerT += dt;
-      marker.position.y = 8.6 + Math.sin(markerT * 2.4) * 0.35;
+      marker.position.y = markerY + Math.sin(markerT * 2.4) * 0.35;
       marker.rotation.y += dt * 1.6;
       var s = 1 + Math.sin(markerT * 3) * 0.12;
       ring.scale.set(s, s, 1);
@@ -367,14 +375,13 @@ CC.missions = (function () {
 
   // ---------- restore after loading a save ----------
   function restore() {
+    if (CC.m2) CC.m2.restore();
     var s = st().m1;
     if (s === 1) {
       CC.ui.tracker("First Budget", "Buy the essentials while staying within your 40-coin budget: lunch, notebook, bus pass.");
-      setMarker(!essentialsOwned());
+      if (!essentialsOwned()) setMarkerAt(48, 7); else setMarker(false);
     } else {
-      CC.ui.tracker(null);
-      setMarker(false);
-      if (!s) startSoon();
+      if (!s) { CC.ui.tracker(null); setMarker(false); startSoon(); }
     }
     refreshChip();
   }
@@ -391,10 +398,14 @@ CC.missions = (function () {
   CC.m1 = {
     addB: addB, removeB: removeB, removeAtCheckout: removeAtCheckout,
     pay: pay, replay: replay,
-    closeP: function () { CC.ui.closePanel(); refreshChip(); }
+    closeP: function () {
+      CC.ui.closePanel(); refreshChip();
+      if (st().m1 === 2 && !st().m2 && CC.m2) CC.m2.startSoon();
+    }
   };
   return {
     init: init, update: update, startSoon: startSoon, restore: restore,
-    say: say, PRODUCTS: PRODUCTS
+    say: say, PRODUCTS: PRODUCTS,
+    setMarkerAt: setMarkerAt, setMarker: setMarker
   };
 })();

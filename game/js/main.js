@@ -163,6 +163,7 @@ CC.main = (function () {
     registerBenches();
 
     CC.missions.init(scene);
+    CC.m2.init(scene);
 
     clock = new THREE.Clock();
     CC.paused = true;
@@ -249,6 +250,7 @@ CC.main = (function () {
     }
 
     CC.missions.update(dt);
+    CC.m2.update(dt);
 
     // interact and pause inputs
     if (CC.input.pressed("KeyE") || CC.input.padInteract()) {
@@ -278,7 +280,8 @@ CC.main = (function () {
       if (d < r * r && d < bestD) { best = it; bestD = d; }
     }
     currentInteract = best;
-    CC.ui.prompt(best ? "<b>E</b>" + best.label : null);
+    var lbl = best ? (typeof best.label === "function" ? best.label() : best.label) : null;
+    CC.ui.prompt(lbl ? "<b>E</b>" + lbl : null);
   }
 
   window.addEventListener("load", init);

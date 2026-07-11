@@ -5,7 +5,7 @@
 CC.world = (function () {
   var scene, sun, hemi, amb;
   var colliders = { city: [] }, solids = [];
-  var lamps = [], lampLights = [], windowMats = [], trees = [], flags = [];
+  var lamps = [], lampLights = [], windowMats = [], trees = [], flags = [], plaques = [];
   var water, fountainJet, bus, busState;
   var billboard = { mat: null, canvas: null, tex: null, glitch: false, timer: 0, custom: false };
   var clockHand = null;
@@ -38,18 +38,33 @@ CC.world = (function () {
 
   // Canvas text texture for signs, posters, murals
   function textTex(lines, w, h, bg, fg, fs, deco) {
-    var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    // Render at double resolution and auto-shrink the font so text is always
+    // sharp and never cut off, no matter how long the label is.
+    var scale = 2;
+    var cv = document.createElement("canvas"); cv.width = w * scale; cv.height = h * scale;
     var c = cv.getContext("2d");
+    c.scale(scale, scale);
     c.fillStyle = bg; c.fillRect(0, 0, w, h);
     if (deco === "stripe") {
       c.fillStyle = "rgba(255,255,255,.25)";
       for (var i = 0; i < w; i += 40) c.fillRect(i, 0, 20, h);
     }
-    c.fillStyle = fg; c.textAlign = "center"; c.textBaseline = "middle";
-    c.font = "bold " + fs + "px Trebuchet MS, sans-serif";
     var L = Array.isArray(lines) ? lines : [lines];
+    var maxW = w * 0.92;
+    var fit = fs;
+    c.textAlign = "center"; c.textBaseline = "middle";
+    L.forEach(function (t) {
+      c.font = "bold " + fs + "px Trebuchet MS, sans-serif";
+      var m = c.measureText(t).width;
+      if (m > maxW) fit = Math.min(fit, Math.floor(fs * maxW / m));
+    });
+    // also fit vertically when there are several lines
+    var maxH = (h * 0.9) / L.length / 1.15;
+    if (fit > maxH) fit = Math.floor(maxH);
+    c.fillStyle = fg;
+    c.font = "bold " + fit + "px Trebuchet MS, sans-serif";
     L.forEach(function (t, i) {
-      c.fillText(t, w / 2, h / 2 + (i - (L.length - 1) / 2) * (fs * 1.15));
+      c.fillText(t, w / 2, h / 2 + (i - (L.length - 1) / 2) * (fit * 1.15));
     });
     var t = new THREE.CanvasTexture(cv); return t;
   }
@@ -95,10 +110,21 @@ CC.world = (function () {
     }
     // sign
     if (o.name) {
-      var s = sign(o.name, Math.min(w - 1, 10), 1.4, o.signBg || "#22333b", o.signFg || "#fff4e0",
-        o.x + (o.doorOff || 0) * 0.4, 3.6, o.z + dz + (o.face === "N" ? -0.15 : 0.15),
-        o.face === "N" ? Math.PI : 0, 56);
+      var s = sign(o.name, Math.min(w - 1, 12), 1.8, o.signBg || "#22333b", o.signFg || "#fff4e0",
+        o.x + (o.doorOff || 0) * 0.4, 3.8, o.z + dz + (o.face === "N" ? -0.15 : 0.15),
+        o.face === "N" ? Math.PI : 0, 52);
       g.add(s);
+      // OPEN or CLOSED plaque beside the door, updated live with shop hours
+      if (o.hours) {
+        var openT = textTex("OPEN", 128, 64, "#2e8b57", "#ffffff", 34);
+        var closedT = textTex("CLOSED", 128, 64, "#8a4444", "#f0e0e0", 30);
+        var pq = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 0.58),
+          new THREE.MeshBasicMaterial({ map: closedT }));
+        pq.position.set(o.x + (o.doorOff || 0) + 1.7, 2.1, o.z + dz + (o.face === "N" ? -0.1 : 0.1));
+        if (o.face === "N") pq.rotation.y = Math.PI;
+        scene.add(pq); g.add(pq);
+        plaques.push({ m: pq.material, openT: openT, closedT: closedT, hours: o.hours });
+      }
     }
     return { group: g, door: { x: o.x + (o.doorOff || 0), z: o.z + dz + (o.face === "N" ? -1 : 1) }, body: body };
   }
@@ -212,7 +238,7 @@ CC.world = (function () {
       f.position.set(fx + 1, 11.3, -35); scene.add(f); flags.push(f);
     });
 
-    B.home = building({ x: 42, z: -16, w: 16, d: 16, h: 7, color: 0x9a8f80, face: "S", name: "FOR THE NEW OWNER", signBg: "#5a5248", trim: 0x6a6156, hours: [0, 24] });
+    B.home = building({ x: 42, z: -16, w: 16, d: 16, h: 7, color: 0x9a8f80, face: "S", name: "YOUR NEW HOME", signBg: "#1d6b6e", trim: 0x6a6156, hours: [0, 24] });
     // boarded storefront planks, removed when the shop opens (mission 9)
     for (var bi = 0; bi < 3; bi++) {
       var pb = box(5.5, 0.7, 0.15, 0x7a5f45, 42 + (bi % 2 ? 1 : -1), 1.4 + bi * 0.9, -7.85, false);
@@ -234,7 +260,7 @@ CC.world = (function () {
       var cb = new THREE.Mesh(new THREE.BoxGeometry(6, 0.6, 0.15), mat(0x6a5540));
       cb.position.set(97 + cbi * 2 - 2, 1.5 + cbi * 0.8, -7.85); cb.rotation.z = cbi % 2 ? 0.15 : -0.1; ccDamaged.add(cb);
     }
-    var ccSignOld = sign(["COMMUNITY CENTER", "CLOSED"], 10, 2, "#4a443c", "#c9c2b4", 100, 4.6, -7.8, 0, 40);
+    var ccSignOld = sign(["COMMUNITY CENTER", "UNDER REPAIR"], 10, 2, "#4a443c", "#e8dcc4", 100, 4.6, -7.8, 0, 40);
     ccDamaged.add(ccSignOld);
     var ccBody2 = new THREE.Mesh(new THREE.BoxGeometry(24, 7, 18), mat(CC.PAL.mint));
     ccBody2.position.set(100, 3.5, -17); ccBody2.castShadow = true; ccFixed.add(ccBody2);
@@ -543,6 +569,11 @@ CC.world = (function () {
     windowMats.forEach(function (wmi) {
       var open = !wmi.open || (CC.hour() >= wmi.open[0] && CC.hour() < wmi.open[1]);
       wmi.m.emissive.setHex(night && open ? 0x554411 : 0x000000);
+    });
+    plaques.forEach(function (pq) {
+      var open = CC.hour() >= pq.hours[0] && CC.hour() < pq.hours[1];
+      var want = open ? pq.openT : pq.closedT;
+      if (pq.m.map !== want) { pq.m.map = want; pq.m.needsUpdate = true; }
     });
     stringS3.forEach(function (bm) { bm.material.emissive.setHex(night ? 0xaa7711 : 0x332200); });
   }

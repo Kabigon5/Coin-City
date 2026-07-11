@@ -9,6 +9,7 @@ CC.player = (function () {
   var camYaw = Math.PI * 0.85, camPitch = 0.42, camDist = 5;
   var camPos = new THREE.Vector3(), camTgt = new THREE.Vector3();
   var stepTimer = 0, riding = false;
+  var jumpH = 0, jumpV = 0; // simple jump arc, Space to jump
   var ray = new THREE.Raycaster();
   var R = 0.45; // body radius
 
@@ -111,6 +112,17 @@ CC.player = (function () {
       }
     }
 
+    // jump: Space launches when grounded and not on the bicycle
+    if (!CC.paused && CC.input.pressed("Space") && jumpH <= 0 && !riding) {
+      jumpV = 5.4; jumpH = 0.001;
+      CC.audio.sfx("pop");
+    }
+    if (jumpH > 0) {
+      jumpV -= 15.5 * dt;
+      jumpH += jumpV * dt;
+      if (jumpH <= 0) { jumpH = 0; jumpV = 0; CC.audio.sfx("step"); }
+    }
+
     group.position.x = pos.x; group.position.z = pos.z;
     var cy = group.rotation.y;
     var diff = ((faceYaw - cy + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
@@ -123,7 +135,9 @@ CC.player = (function () {
       group.position.y = 0.18;
     } else {
       CC.chars.animate(rig, CC.clamp(moveAmt, 0, 1), dt);
+      if (jumpH > 0) { rig.legL.rotation.x = -0.5; rig.legR.rotation.x = 0.4; }
     }
+    group.position.y += jumpH;
 
     // camera follow with occlusion
     camTgt.set(pos.x, 1.55, pos.z);

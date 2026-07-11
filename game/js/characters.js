@@ -220,11 +220,30 @@ CC.chars = (function () {
 
   var npcs = {}, peds = [];
 
+  // Floating name tag that always faces the camera, so players can tell
+  // characters apart at a glance.
+  function makeNameSprite(name, col) {
+    var cv = document.createElement("canvas"); cv.width = 256; cv.height = 64;
+    var c = cv.getContext("2d");
+    c.fillStyle = "rgba(20,32,40,.78)";
+    c.beginPath(); c.roundRect ? c.roundRect(4, 8, 248, 48, 18) : c.rect(4, 8, 248, 48); c.fill();
+    c.fillStyle = col || "#ffe6a8"; c.textAlign = "center"; c.textBaseline = "middle";
+    var fs = 30; c.font = "bold " + fs + "px Trebuchet MS";
+    var mw = c.measureText(name).width;
+    if (mw > 230) { fs = Math.floor(fs * 230 / mw); c.font = "bold " + fs + "px Trebuchet MS"; }
+    c.fillText(name, 128, 33);
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: true }));
+    sp.scale.set(1.7, 0.42, 1);
+    sp.position.y = 2.05;
+    return sp;
+  }
+
   function spawnCast(scene, schedules) {
     for (var id in CAST) {
       var n = new NPC(id, CAST[id]);
       n.schedule = schedules[id] || [];
       n.applySchedule(CC.hour());
+      n.group.add(makeNameSprite(CAST[id].name, "#ffe6a8"));
       scene.add(n.group);
       npcs[id] = n;
     }
@@ -272,6 +291,6 @@ CC.chars = (function () {
   return {
     make: makeCharacter, animate: animate, wave: wave,
     CAST: CAST, npcs: npcs, peds: peds,
-    spawnCast: spawnCast, spawnPeds: spawnPeds, update: update
+    spawnCast: spawnCast, spawnPeds: spawnPeds, update: update, nameSprite: makeNameSprite
   };
 })();

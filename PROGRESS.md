@@ -47,6 +47,24 @@ Updated: Session 2, walkable city milestone COMPLETE and browser-verified
 interiors.js, dialogue.js, economy.js, phone.js, jobs.js, business.js, futurelens.js,
 missions.js (m1-m10), cinematic.js, full menus/creator, assessments, docs/ deliverables
 
+## SESSION 4: UX PASS + JUMP + MISSION 2 (all tests pass in real Chrome)
+- Text engine fixed: every canvas sign now auto-shrinks its font to fit and
+  renders at 2x resolution. No sign text is cut off anywhere (bank sign, store
+  labels, kiosk, plaques all verified on screenshots in exports/)
+- Shop clarity: OPEN/CLOSED plaques by every shop door update live with hours;
+  closed doors explain their hours right in the interaction prompt; home sign
+  renamed YOUR NEW HOME; community center reads UNDER REPAIR; floating name
+  tags over all 10 named characters and the store cashier
+- Space to jump: proper arc with gravity, landing sound, verified in browser
+- MISSION 2: FIRST PROFIT complete: intro after Mission 1, lemonade kit at the
+  grocery (10 coins) with a borrow-from-Nia path when broke (repay 12, gentle
+  forgiveness if short), stand construction in the plaza, price choice 2 to 5
+  coins with demand that honestly responds (95/80/55/35 percent), animated
+  customers who walk up, buy or decline with speech, close-early option,
+  adaptive YOUR FIRST PROFIT summary teaching revenue minus costs equals
+  profit, replay, full save/reload verified mid-selling
+- Mission marker is now shared and moves between objectives
+
 ## MISSION 1: FIRST BUDGET (COMPLETE, all 10 test scenarios pass in real Chrome)
 - Start menu with Continue and New Game; intro dialogue from Grandpa Ledger;
   40-coin grant; mission tracker; animated gold marker and door ring at the store

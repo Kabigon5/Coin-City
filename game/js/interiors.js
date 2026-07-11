@@ -8,7 +8,7 @@ CC.interiors = (function () {
 
   // zone id -> {cx, cz, w, d, name, hours, wallC, floorC}
   var ROOMS = {
-    home:    { cx: 1000, cz: 0, w: 18, d: 14, name: "Your Building", wallC: 0x9a8f80, floorC: 0x8a7a66 },
+    home:    { cx: 1000, cz: 0, w: 18, d: 14, name: "Your New Home", wallC: 0x9a8f80, floorC: 0x8a7a66 },
     bank:    { cx: 1120, cz: 0, w: 20, d: 15, name: "Penny's Community Bank", hours: [9, 17], wallC: 0xbfe4d2, floorC: 0xd9cdb4 },
     bakery:  { cx: 1240, cz: 0, w: 18, d: 14, name: "Nia's Bakery", hours: [7, 18], wallC: 0xf3cdd6, floorC: 0xe8d9c4 },
     grocery: { cx: 1360, cz: 0, w: 24, d: 18, name: "Budget Basket Market", hours: [8, 20], wallC: 0xd9e4c4, floorC: 0xc9c2b0 },
@@ -419,7 +419,10 @@ CC.interiors = (function () {
       var d = doorFor(zone);
       CC.interact.add("city", {
         id: "door_" + zone, x: d.x, z: d.z, r: 2,
-        label: "Enter " + ROOMS[zone].name,
+        label: function () {
+          if (isOpen(zone)) return "Enter " + ROOMS[zone].name;
+          return ROOMS[zone].name + " is closed. Hours: " + hoursText(zone);
+        },
         action: function () { enter(zone); }
       });
     })(zone);

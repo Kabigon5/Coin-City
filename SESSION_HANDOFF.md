@@ -62,7 +62,9 @@ cd /home/claude/Coin-City && zip -qr "backups/Coin-City_$(date +%Y-%m-%d_%H%M).z
 None open. Browser QA found and fixed: fractional minutes in the clock
 text, and a file:// CORS console error from the billboard drop-in loader.
 
-## STOP: awaiting user playtest feedback on Mission 1 before any further work.
+## STOP: awaiting user playtest of the v3 build (UX pass, jump, Missions 1 and 2).
+Mission 3 candidates from the simplified roadmap: scam mission, then emergency
+mission. Do not start without user direction.
 
 ## Next implementation step
 interiors.js: nine enterable rooms at x >= 1000 with door interactables and
