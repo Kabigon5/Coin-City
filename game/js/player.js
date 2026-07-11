@@ -90,7 +90,7 @@ CC.player = (function () {
     var dx = fx * (-az) + rx * ax, dz = fz * (-az) + rz * ax;
     var moving = Math.abs(dx) + Math.abs(dz) > 0.01;
 
-    var top = riding ? 8.5 : (CC.input.running() ? 6 : 3.2);
+    var top = riding ? 8.5 : (CC.input.running() ? 6 : 3.4);
     // low energy slows the player a little, never stops them
     if (CC.state.energy < 15) top *= 0.72;
     var target = moving ? top : 0;
@@ -139,7 +139,7 @@ CC.player = (function () {
       want.copy(camTgt).addScaledVector(dir, Math.max(0.7, hits[0].distance * 0.88));
     }
     if (want.y < 0.4) want.y = 0.4;
-    var k = 1 - Math.exp(-dt * 9);
+    var k = 1 - Math.exp(-dt * 12);
     camPos.lerp(want, k);
     camera.position.copy(camPos);
     camera.lookAt(camTgt);

@@ -243,26 +243,85 @@ CC.interiors = (function () {
 
   function buildStore() {
     var R = shell("store"), cx = R.cx, cz = R.cz;
-    // clothing racks
-    [[-4, -3], [0, -3], [4, -3]].forEach(function (rk, i) {
-      box("store", 2.6, 0.1, 0.1, 0x8a8a8a, cx + rk[0], 1.7, cz + rk[1], false);
-      box("store", 0.1, 1.7, 0.1, 0x8a8a8a, cx + rk[0] - 1.3, 0.85, cz + rk[1], false);
-      box("store", 0.1, 1.7, 0.1, 0x8a8a8a, cx + rk[0] + 1.3, 0.85, cz + rk[1], false);
-      addCol("store", cx + rk[0] - 1.3, cz + rk[1] - 0.3, cx + rk[0] + 1.3, cz + rk[1] + 0.3);
-      for (var h = 0; h < 4; h++) {
-        var shirt = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.08),
-          mat(CC.CLOTH[(i * 4 + h) % CC.CLOTH.length]));
-        shirt.position.set(cx + rk[0] - 0.9 + h * 0.6, 1.28, cz + rk[1]); scene.add(shirt);
-      }
+    // Clean, colorful Mission 1 layout. Display coordinates must match
+    // DISPLAY_AT in missions.js.
+    function display(x, z, faceRy, label1, label2, baseC, buildItem) {
+      box("store", 1, 0.9, 1, baseC, x, 0.45, z, true);
+      var lb = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.95),
+        new THREE.MeshBasicMaterial({ map: CC.world.textTex([label1, label2], 256, 128, "#fff8eb", "#22333b", 34) }));
+      lb.position.set(x, 2, z); lb.rotation.y = faceRy; scene.add(lb);
+      buildItem(x, z);
+    }
+    function m2(c) { return new THREE.MeshLambertMaterial({ color: c }); }
+    function put(geom, c, x, y, z) {
+      var m = new THREE.Mesh(geom, m2(c)); m.position.set(x, y, z); scene.add(m); return m;
+    }
+    var E = Math.PI / 2, W = -Math.PI / 2, S = 0;
+    // ESSENTIALS along the west wall
+    var head1 = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9),
+      new THREE.MeshBasicMaterial({ map: CC.world.textTex(["EVERYDAY ESSENTIALS"], 320, 80, "#2fa5a9", "#fff4e0", 34) }));
+    head1.position.set(cx - 8.8, 2.9, cz - 0.5); head1.rotation.y = E; scene.add(head1);
+    display(cx - 7, cz - 4, E, "Packed Lunch", "8 coins", 0x9fe2bf, function (x, z) {
+      put(new THREE.BoxGeometry(0.5, 0.4, 0.35), 0xb08050, x, 1.1, z);
+      put(new THREE.SphereGeometry(0.12, 8, 8), 0xd94f6a, x + 0.25, 1.02, z + 0.15);
     });
-    // shelf of practical goods and a display of tempting extras
-    box("store", 0.6, 2, 5, 0x7a5f45, cx - 8, 1, cz + 1.5, true);
-    box("store", 3, 1, 1.4, 0x5a3a7a, cx + 5, 0.5, cz + 3, true);
-    var glam = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.1),
-      new THREE.MeshBasicMaterial({ map: CC.world.textTex(["NEW! LIMITED!"], 256, 100, "#5a3a7a", "#ffd9ff", 36) }));
-    glam.position.set(cx + 5, 1.8, cz + 2.3); glam.rotation.y = Math.PI; scene.add(glam);
-    // mirror
-    box("store", 1, 2.2, 0.08, 0xbfe8f0, cx + 8.2, 1.1, cz - 1, false);
+    display(cx - 7, cz - 0.5, E, "Notebook", "6 coins", 0x9fe2bf, function (x, z) {
+      put(new THREE.BoxGeometry(0.55, 0.08, 0.7), 0x3b6fb4, x, 0.95, z).rotation.y = 0.3;
+      put(new THREE.BoxGeometry(0.5, 0.05, 0.65), 0xfff4e0, x, 1.01, z).rotation.y = 0.3;
+    });
+    display(cx - 7, cz + 3, E, "Bus Pass", "12 coins", 0x9fe2bf, function (x, z) {
+      put(new THREE.BoxGeometry(0.55, 0.35, 0.06), 0x2fa5a9, x, 1.1, z).rotation.y = 0.5;
+    });
+    // WANTS along the north wall
+    var head2 = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9),
+      new THREE.MeshBasicMaterial({ map: CC.world.textTex(["TREATS + TRENDS"], 320, 80, "#7a4fb4", "#ffd9ff", 34) }));
+    head2.position.set(cx + 0.5, 2.9, cz - 6.8); scene.add(head2);
+    display(cx - 3.5, cz - 5.6, S, "Candy Mix", "3 coins", 0xf3cdd6, function (x, z) {
+      [0xd94f6a, 0xffc94d, 0x9fe2bf].forEach(function (c, i) {
+        put(new THREE.SphereGeometry(0.11, 8, 8), c, x - 0.18 + i * 0.18, 1, z);
+      });
+    });
+    display(cx - 1, cz - 5.6, S, "Wind-Up Robot", "10 coins", 0xf3cdd6, function (x, z) {
+      put(new THREE.BoxGeometry(0.3, 0.35, 0.22), 0x8a8a8a, x, 1.08, z);
+      put(new THREE.BoxGeometry(0.2, 0.18, 0.18), 0xb0b0b0, x, 1.35, z);
+      put(new THREE.SphereGeometry(0.04, 6, 6), 0xffc94d, x - 0.05, 1.37, z + 0.1);
+      put(new THREE.SphereGeometry(0.04, 6, 6), 0xffc94d, x + 0.05, 1.37, z + 0.1);
+    });
+    display(cx + 1.5, cz - 5.6, S, "Video Game", "20 coins", 0xf3cdd6, function (x, z) {
+      var g = put(new THREE.BoxGeometry(0.42, 0.52, 0.06), 0x22333b, x, 1.15, z);
+      var scr = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.3),
+        new THREE.MeshBasicMaterial({ map: CC.world.textTex(["PLAY!"], 96, 80, "#4a2a8a", "#ffd94d", 26) }));
+      scr.position.set(x, 1.2, z + 0.04); scene.add(scr);
+    });
+    display(cx + 4, cz - 5.6, S, "Headphones", "18 coins", 0xf3cdd6, function (x, z) {
+      var arc = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16, Math.PI), m2(0xff8a5c));
+      arc.position.set(x, 1.1, z); scene.add(arc);
+      put(new THREE.SphereGeometry(0.09, 8, 8), 0x22333b, x - 0.22, 1.08, z);
+      put(new THREE.SphereGeometry(0.09, 8, 8), 0x22333b, x + 0.22, 1.08, z);
+    });
+    // bigger wants along the east wall
+    display(cx + 7, cz - 3, W, "New Shoes", "22 coins", 0xd4c0e8, function (x, z) {
+      put(new THREE.BoxGeometry(0.24, 0.16, 0.5), 0xb0342c, x - 0.18, 1, z);
+      put(new THREE.BoxGeometry(0.24, 0.16, 0.5), 0xb0342c, x + 0.18, 1, z);
+    });
+    display(cx + 7, cz + 0.5, W, "Trendy Backpack", "16 coins", 0xd4c0e8, function (x, z) {
+      put(new THREE.BoxGeometry(0.42, 0.55, 0.25), 0xff8a5c, x, 1.2, z);
+      put(new THREE.BoxGeometry(0.3, 0.2, 0.1), 0xffc94d, x, 1.05, z + 0.14);
+    });
+    // checkout counter with a register, by the door
+    box("store", 3.2, 1, 1.2, 0x7a4fb4, cx + 4, 0.5, cz + 3.4, true);
+    put(new THREE.BoxGeometry(0.5, 0.5, 0.4), 0x39454e, cx + 5, 1.25, cz + 3.4);
+    var till = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.7),
+      new THREE.MeshBasicMaterial({ map: CC.world.textTex(["CHECK OUT HERE"], 256, 70, "#ffc94d", "#22333b", 34) }));
+    till.position.set(cx + 4, 1.8, cz + 2.7); scene.add(till);
+    // friendly touches, no clutter
+    var rug = new THREE.Mesh(new THREE.CircleGeometry(1.8, 20), m2(0xffc94d));
+    rug.rotation.x = -Math.PI / 2; rug.position.set(cx, 0.03, cz + 1); scene.add(rug);
+    box("store", 0.4, 0.5, 0.4, 0xc4574f, cx - 4, 0.25, cz + 5.6, false);
+    put(new THREE.SphereGeometry(0.35, 8, 8), 0x4a7d4a, cx - 4, 0.8, cz + 5.6);
+    var wallSign = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 1.1),
+      new THREE.MeshBasicMaterial({ map: CC.world.textTex(["THREAD + THINGS"], 320, 80, "#fff8eb", "#7a4fb4", 40) }));
+    wallSign.position.set(cx + 8.8, 2.9, cz + 3.5); wallSign.rotation.y = W; scene.add(wallSign);
   }
 
   function buildCenter() {

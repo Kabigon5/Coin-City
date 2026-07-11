@@ -250,7 +250,20 @@ CC.world = (function () {
     B.grocery = building({ x: -73, z: 16, w: 22, d: 16, h: 6, color: 0x8fbf7f, face: "N", name: "BUDGET BASKET MARKET", signBg: "#3a6a3a", hours: [8, 20] });
     B.cafe = building({ x: -25, z: 16, w: 18, d: 16, h: 6, color: 0xd9a066, face: "N", name: "SUNRISE CAFE", signBg: "#7a4a26", hours: [6, 16] });
     B.bakery = building({ x: 21, z: 16, w: 18, d: 16, h: 6, color: 0xf0a0b4, face: "N", name: "NIA'S BAKERY", signBg: "#c4485f", trim: 0xf3d9a0, hours: [7, 18] });
-    B.store = building({ x: 48, z: 16, w: 16, d: 16, h: 6, color: 0xb48ad4, face: "N", name: "THREAD + THINGS", signBg: "#5a3a7a", hours: [9, 19] });
+    B.store = building({ x: 48, z: 16, w: 16, d: 16, h: 6, color: 0xc9a0e8, face: "N", name: "THREAD + THINGS", signBg: "#7a4fb4", trim: 0xffc94d, hours: [9, 19] });
+    // Mission 1 storefront dressing: striped awning, display windows,
+    // welcome mat and door lamps so the store is easy to spot.
+    var awn = new THREE.Mesh(new THREE.PlaneGeometry(9, 2.4),
+      new THREE.MeshLambertMaterial({ map: textTex([""], 256, 64, "#ffc94d", "#fff", 10, "stripe"), side: THREE.DoubleSide }));
+    awn.position.set(48, 3.1, 6.6); awn.rotation.x = -0.9; scene.add(awn);
+    [[44.2], [51.8]].forEach(function (wx) {
+      box(2.6, 1.6, 0.25, 0xfff4e0, wx[0], 1.5, 7.95, false);
+      box(2.2, 1.2, 0.15, CC.PAL.glass, wx[0], 1.5, 7.8, false);
+      box(0.5, 0.6, 0.1, 0xd94f6a, wx[0] - 0.5, 1.3, 7.7, false);
+      box(0.4, 0.5, 0.1, 0x2fa5a9, wx[0] + 0.5, 1.25, 7.7, false);
+    });
+    flat(46.9, 6.1, 49.1, 7.3, 0xc4574f, 0.05);
+    lamp(45, 5.5); lamp(51, 5.5);
     B.repair = building({ x: 75, z: 16, w: 18, d: 16, h: 6, color: 0x8a9db4, face: "N", name: "RUSTY'S FIX-IT", signBg: "#3a4a5a", hours: [9, 18] });
 
     // decorative and boarded buildings (some heal at restoration stage 2)
@@ -380,7 +393,7 @@ CC.world = (function () {
     // construction barrier near the community center
     box(3, 1, 0.2, 0xe07b39, 84, 0.5, -6, true);
     // litter pieces (volunteer cleanup targets in mission 10)
-    [[-20, -10], [14, -24], [46, 5.5], [-70, 5.5], [6, 40], [-96, -34]].forEach(function (lt, i) {
+    [[-20, -10], [14, -24], [-70, 5.5], [6, 40], [-96, -34]].forEach(function (lt, i) {
       var l = flat(lt[0], lt[1], lt[0] + 0.7, lt[1] + 0.5, 0xd8d3c2, 0.06);
       l.rotation.z = Math.random(); litter.push({ mesh: l, x: lt[0], z: lt[1], id: "lit" + i, taken: false });
     });

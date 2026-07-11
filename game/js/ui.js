@@ -77,6 +77,16 @@ CC.ui = (function () {
     bannerTimer = setTimeout(function () { hide("banner"); }, (secs || 3.4) * 1000);
   }
 
+  function panel(html) {
+    el("panelCard").innerHTML = html;
+    show("panel"); CC.paused = true; CC.input.unlock();
+  }
+  function closePanel() { hide("panel"); CC.paused = false; }
+  function menu(html) {
+    if (html) { el("menuCard").innerHTML = html; show("menu"); }
+    else hide("menu");
+  }
+
   function basketChip(text) {
     if (text) { el("basketChip").textContent = text; show("basketChip"); }
     else hide("basketChip");
@@ -99,6 +109,7 @@ CC.ui = (function () {
     updateHUD: updateHUD, toast: toast, prompt: prompt,
     hint: hint, clearHint: clearHint, tracker: tracker,
     fade: fade, banner: banner, basketChip: basketChip, bizHUD: bizHUD,
+    panel: panel, closePanel: closePanel, menu: menu,
     applySettingsToBody: applySettingsToBody
   };
 })();

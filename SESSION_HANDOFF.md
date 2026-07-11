@@ -62,6 +62,8 @@ cd /home/claude/Coin-City && zip -qr "backups/Coin-City_$(date +%Y-%m-%d_%H%M).z
 None open. Browser QA found and fixed: fractional minutes in the clock
 text, and a file:// CORS console error from the billboard drop-in loader.
 
+## STOP: awaiting user playtest feedback on Mission 1 before any further work.
+
 ## Next implementation step
 interiors.js: nine enterable rooms at x >= 1000 with door interactables and
 fade transitions, then dialogue.js. The walkable-city milestone is done and

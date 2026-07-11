@@ -47,7 +47,19 @@ Updated: Session 2, walkable city milestone COMPLETE and browser-verified
 interiors.js, dialogue.js, economy.js, phone.js, jobs.js, business.js, futurelens.js,
 missions.js (m1-m10), cinematic.js, full menus/creator, assessments, docs/ deliverables
 
+## MISSION 1: FIRST BUDGET (COMPLETE, all 10 test scenarios pass in real Chrome)
+- Start menu with Continue and New Game; intro dialogue from Grandpa Ledger;
+  40-coin grant; mission tracker; animated gold marker and door ring at the store
+- Polished Thread + Things: striped awning, display windows, door lamps, welcome
+  mat; clean interior with 9 labeled product displays (3 essentials, 6 wants),
+  checkout counter with an animated cashier
+- Full shopping loop: inspect (price, description, gentle hint, coins-left
+  preview), basket add/remove, overspend blocked, checkout review with per-line
+  remove, pay, inventory, transaction log, autosaves
+- Adaptive YOUR FIRST BUDGET summary (savings/balanced/tight/extras lessons),
+  replay, save/reload verified mid-shop and post-completion
+
 ## EXACT NEXT STEP
-interiors.js: nine enterable rooms at x >= 1000 (home, bank, bakery, grocery, cafe,
+WAITING FOR USER FEEDBACK ON MISSION 1. Do not start Mission 2. Previously planned next: dialogue depth, Mission 2. Old note: interiors.js: nine enterable rooms at x >= 1000 (home, bank, bakery, grocery, cafe,
 repair, store, community center, city hall), door interactables with fade transitions
 both ways, per-room colliders and props. Then dialogue.js.

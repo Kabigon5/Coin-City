@@ -162,14 +162,62 @@ CC.main = (function () {
     CC.player.warp(8, 6, Math.PI); // stepping off the bus at the plaza stop
     registerBenches();
 
-    CC.ui.show("hud");
-    CC.ui.updateHUD();
-    CC.ui.tracker("Explore Budget Bay", "Walk the district. More of the story arrives in the next build.");
-    CC.ui.hint("move", "WASD or arrows: walk. Shift: run. Mouse: camera. Click the screen to look around.", 9);
+    CC.missions.init(scene);
 
     clock = new THREE.Clock();
+    CC.paused = true;
+    showStartMenu();
     CC.ui.fade(false, null, 900);
     requestAnimationFrame(loop);
+  }
+
+  // ---------- start menu, new game, continue ----------
+  function showStartMenu() {
+    var hasSave = !!CC.save.read("auto");
+    CC.ui.menu(
+      "<h1>COIN CITY</h1><h2>Chapter One: Budget Bay</h2>" +
+      "<div class='menuList'>" +
+      (hasSave ? "<button class='btn gold' onclick='CC.main.menuContinue()'>Continue</button>" : "") +
+      "<button class='btn' onclick='CC.main.menuNew()'>New Game" + (hasSave ? " (restart)" : "") + "</button>" +
+      "</div>" +
+      "<p style='font-size:13px;opacity:.75'>WASD or arrows: walk. Shift: run. Mouse: camera. E: interact. Esc: close windows.</p>"
+    );
+  }
+  function reapplyWorld() {
+    CC.world.setWeather(CC.state.weather);
+    CC.world.setRestoration(CC.state.restoration);
+    CC.world.applyStage();
+    CC.interiors.refreshHome();
+    CC.ui.updateHUD();
+  }
+  function menuNew() {
+    CC.audio.ensure(); CC.audio.resume(); CC.audio.sfx("ui");
+    CC.state = CC.defaultState();
+    reapplyWorld();
+    CC.zone = "city";
+    CC.player.spawn(scene, camera, CC.state.look);
+    CC.player.warp(8, 6, Math.PI);
+    CC.ui.menu(null);
+    CC.ui.show("hud");
+    CC.paused = false;
+    CC.ui.hint("move", "WASD or arrows: walk. Shift: run. Move the mouse (or click and drag) to look around.", 8);
+    CC.missions.startSoon();
+  }
+  function menuContinue() {
+    var d = CC.save.read("auto");
+    if (!d) { menuNew(); return; }
+    CC.audio.ensure(); CC.audio.resume(); CC.audio.sfx("ui");
+    CC.state = d;
+    reapplyWorld();
+    CC.zone = (d._pos && d._pos.zone) || "city";
+    CC.player.spawn(scene, camera, CC.state.look);
+    if (d._pos) CC.player.warp(d._pos.x, d._pos.z, Math.PI);
+    else CC.player.warp(8, 6, Math.PI);
+    CC.ui.menu(null);
+    CC.ui.show("hud");
+    CC.paused = false;
+    CC.missions.restore();
+    CC.ui.toast("Welcome back to Budget Bay.", "info");
   }
 
   var hudTick = 0;
@@ -200,6 +248,8 @@ CC.main = (function () {
       if (hudTick > 0.5) { hudTick = 0; CC.ui.updateHUD(); }
     }
 
+    CC.missions.update(dt);
+
     // interact and pause inputs
     if (CC.input.pressed("KeyE") || CC.input.padInteract()) {
       if (currentInteract && !CC.paused) {
@@ -208,7 +258,10 @@ CC.main = (function () {
         it.action(it);
       }
     }
-    if (CC.input.pressed("Escape")) CC.input.unlock();
+    if (CC.input.pressed("Escape")) {
+      if (!document.getElementById("panel").classList.contains("hidden")) CC.m1.closeP();
+      else CC.input.unlock();
+    }
 
     CC.input.endFrame();
     renderer.render(scene, camera);
@@ -230,5 +283,5 @@ CC.main = (function () {
 
   window.addEventListener("load", init);
 
-  return { init: init, sleep: sleep, sceneRef: function () { return scene; }, cameraRef: function () { return camera; } };
+  return { init: init, sleep: sleep, menuNew: menuNew, menuContinue: menuContinue, sceneRef: function () { return scene; }, cameraRef: function () { return camera; } };
 })();

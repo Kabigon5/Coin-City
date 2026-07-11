@@ -30,14 +30,14 @@ CC.defaultState = function () {
     name: "Sky",
     look: { skin: 2, hair: 1, hairC: 0, eyes: 0, top: 0, jacket: 4, pants: 8, shoes: 1, acc: 0, pack: 2 },
     // money
-    cash: 25, savings: 0, bankOpen: false,
+    cash: 0, savings: 0, bankOpen: false,
     goal: { name: "", target: 0 },
     debt: null, // {lender, balance, ratePct, minPay, openedDay, history:[]}
     creditRep: 50,
     // person
     energy: 100, trust: 10, knowledge: 0,
     // world clock
-    day: 1, minutes: 8 * 60 + 30, weather: "clear",
+    day: 1, minutes: 9 * 60, weather: "clear",
     restoration: 8, // 0..100, stage thresholds at 35 and 70
     // progress
     flags: {}, inv: { food: 2, meals: 0, decor: 0, tools: 0, blanket: 0, lamp: 0, kettle: 0, kit: 0, keepsake: 1 },
