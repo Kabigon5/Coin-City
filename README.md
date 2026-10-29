@@ -29,3 +29,7 @@ assets/ images swap in automatically when the game is served over http, for
 example: python3 -m http.server inside the project folder, then open
 http://localhost:8000/game/. Opened directly from the file system the game
 uses its built-in procedural artwork instead (a browser WebGL security rule).
+
+
+## Play online
+https://kabigon5.github.io/Coin-City/game/
